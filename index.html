@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnMate — AI Study Companion</title>
+  <meta name="description" content="Finally understand anything. Your free AI study companion — personalised, always on, always free."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#05060e;--surf:#0c0d1a;--border:rgba(255,255,255,0.06);
+      --text:#eceef8;--muted:#52556e;--soft:#8a8fa8;
+      --a:#6c5ce7;--b:#e84393;--c:#00cba9;--d:#f5a623;
+      --ga:rgba(108,92,231,0.13);--gb:rgba(232,67,147,0.09);
+    }
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased;}
+    #cur{position:fixed;width:9px;height:9px;background:var(--a);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .15s,height .15s,background .15s;}
+    #cur-r{position:fixed;width:30px;height:30px;border:1px solid var(--a);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.4;transition:width .25s,height .25s;}
+    body::before{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E");pointer-events:none;z-index:1;opacity:.4;}
+    .gbg{position:fixed;inset:0;background-image:linear-gradient(rgba(108,92,231,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.022) 1px,transparent 1px);background-size:54px 54px;animation:gMove 28s linear infinite;pointer-events:none;z-index:0;}
+    @keyframes gMove{0%{transform:translateY(0)}100%{transform:translateY(54px)}}
+    .orb{position:fixed;border-radius:50%;filter:blur(88px);pointer-events:none;z-index:0;animation:oDrift ease-in-out infinite;}
+    .o1{width:500px;height:500px;background:var(--ga);top:-130px;left:-110px;animation-duration:26s;}
+    .o2{width:400px;height:400px;background:var(--gb);bottom:8%;right:-110px;animation-duration:32s;animation-delay:-13s;}
+    .o3{width:260px;height:260px;background:rgba(0,203,169,.07);top:42%;left:32%;animation-duration:20s;animation-delay:-6s;}
+    @keyframes oDrift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(24px,-24px) scale(1.04)}66%{transform:translate(-16px,16px) scale(.96)}}
+    .wrap{position:relative;z-index:2;}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 52px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,6,14,.8);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);animation:navIn .7s ease both;}
+    @keyframes navIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+    .logo{font-family:"Bricolage Grotesque",sans-serif;font-size:21px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,var(--a),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .nav-btn{padding:10px 24px;background:linear-gradient(135deg,var(--a),var(--b));border-radius:100px;font-size:13px;font-weight:600;color:#fff;text-decoration:none;transition:all .25s;cursor:none;box-shadow:0 0 22px rgba(108,92,231,.28);}
+    .nav-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(108,92,231,.48);}
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:140px 24px 80px;text-align:center;position:relative;overflow:hidden;}
+    .sym{position:absolute;font-weight:700;pointer-events:none;opacity:0;animation:symUp linear infinite;}
+    @keyframes symUp{0%{opacity:0;transform:translateY(0) rotate(0deg)}8%{opacity:1}88%{opacity:.85}100%{opacity:0;transform:translateY(-100px) rotate(10deg)}}
+    .fcard{position:absolute;background:var(--surf);border:1px solid var(--border);border-radius:13px;padding:11px 15px;font-size:12px;font-weight:500;backdrop-filter:blur(12px);white-space:nowrap;box-shadow:0 14px 44px rgba(0,0,0,.38);animation:cBob ease-in-out infinite;}
+    @keyframes cBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+    .fcard .v{font-family:"Bricolage Grotesque",sans-serif;font-size:17px;font-weight:800;display:block;margin-bottom:1px;}
+    .badge{display:inline-flex;align-items:center;gap:7px;padding:5px 14px 5px 7px;border:1px solid rgba(108,92,231,.3);border-radius:100px;font-size:12px;color:var(--a);background:rgba(108,92,231,.07);margin-bottom:28px;animation:fUp .7s .1s both;}
+    .bdot{width:5px;height:5px;background:var(--c);border-radius:50%;animation:blink 2s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    h1{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(48px,8vw,108px);font-weight:800;line-height:.9;letter-spacing:-4px;margin-bottom:20px;animation:fUp .7s .2s both;position:relative;z-index:2;}
+    h1 .g{background:linear-gradient(135deg,var(--a) 0%,var(--b) 45%,var(--d) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:gShift 5s ease infinite;}
+    @keyframes gShift{0%{background-position:0%}50%{background-position:100%}100%{background-position:0%}}
+    .hsub{font-size:clamp(15px,1.7vw,18px);color:var(--soft);max-width:430px;line-height:1.68;margin-bottom:42px;animation:fUp .7s .32s both;position:relative;z-index:2;font-weight:300;}
+    .hbtns{display:flex;align-items:center;gap:13px;flex-wrap:wrap;justify-content:center;animation:fUp .7s .44s both;position:relative;z-index:2;}
+    .bcta{padding:15px 36px;background:linear-gradient(135deg,var(--a),var(--b));border-radius:100px;font-size:15px;font-weight:600;color:#fff;text-decoration:none;transition:all .28s;cursor:none;box-shadow:0 0 34px rgba(108,92,231,.3);position:relative;overflow:hidden;}
+    .bcta::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.17),transparent);animation:shine 3.5s infinite;}
+    @keyframes shine{0%{left:-100%}100%{left:200%}}
+    .bcta:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 14px 42px rgba(108,92,231,.52);}
+    .bsec{padding:15px 28px;border:1px solid var(--border);border-radius:100px;font-size:15px;font-weight:500;color:var(--muted);text-decoration:none;transition:all .22s;cursor:none;}
+    .bsec:hover{border-color:var(--a);color:var(--text);}
+    .htrust{font-size:11.5px;color:var(--muted);margin-top:16px;animation:fUp .7s .55s both;}
+    @keyframes fUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .cwin{max-width:540px;width:100%;margin:52px auto 0;background:var(--surf);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5),0 0 0 1px var(--border);animation:fUp .8s .7s both;}
+    .cbar{padding:13px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;background:rgba(108,92,231,.04);}
+    .cd{width:9px;height:9px;border-radius:50%;}
+    .clbl{font-size:11.5px;color:var(--muted);margin-left:4px;font-weight:500;}
+    .cmsgs{padding:20px;display:flex;flex-direction:column;gap:11px;}
+    .cm{padding:11px 14px;border-radius:15px;font-size:13px;line-height:1.55;opacity:0;animation:mIn .44s ease forwards;}
+    .cm.u{background:linear-gradient(135deg,var(--a),rgba(108,92,231,.62));color:#fff;align-self:flex-end;border-radius:15px 15px 4px 15px;max-width:78%;}
+    .cm.b{background:var(--bg);border:1px solid var(--border);border-radius:15px 15px 15px 4px;max-width:88%;color:#b4b8cc;}
+    .cm:nth-child(1){animation-delay:1s}.cm:nth-child(2){animation-delay:2.2s}.cm:nth-child(3){animation-delay:3.7s}
+    @keyframes mIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .scue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;animation:fUp 1s 1s both;}
+    .sline{width:1px;height:34px;background:linear-gradient(to bottom,var(--a),transparent);animation:sPulse 2s ease-in-out infinite;}
+    @keyframes sPulse{0%,100%{opacity:.3}50%{opacity:1}}
+    .twrap{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 0;background:rgba(108,92,231,.012);}
+    .tick{display:flex;animation:ticker 28s linear infinite;white-space:nowrap;}
+    .ti{display:inline-flex;align-items:center;gap:9px;padding:0 26px;font-size:12px;color:var(--muted);flex-shrink:0;font-weight:500;}
+    .td{width:3px;height:3px;background:var(--a);border-radius:50%;}
+    @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+    /* STORY */
+    .story{padding:96px 0 0;}
+    .story-head{text-align:center;padding:0 24px;margin-bottom:60px;}
+    .s-tag{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--a);margin-bottom:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;}
+    .s-tag::before,.s-tag::after{content:"";width:18px;height:1px;background:var(--a);}
+    .s-title{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(26px,3.8vw,48px);font-weight:800;letter-spacing:-2px;line-height:1.06;}
+
+    /* CAROUSEL WRAPPER */
+    .car-outer{
+      position:relative;
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+    }
+
+    /* Horizontal scroll track */
+    .panels{
+      display:flex;
+      overflow-x:auto;
+      scroll-snap-type:x mandatory;
+      scroll-behavior:smooth;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .panels::-webkit-scrollbar{display:none;}
+
+    /* Each panel is one full-width slide */
+    .panel{
+      flex-shrink:0;
+      width:100%;
+      position:relative;overflow:hidden;
+      height:480px;
+      background:#080914;
+      scroll-snap-align:start;
+      transition:none;
+    }
+
+    /* Accent line per panel */
+    .panel::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;transform:scaleX(0);transform-origin:left;transition:transform .5s ease;z-index:10;}
+    .panel.active::after{transform:scaleX(1);}
+    .p1::after{background:linear-gradient(90deg,var(--a),var(--b));}
+    .p2::after{background:linear-gradient(90deg,var(--b),var(--d));}
+    .p3::after{background:linear-gradient(90deg,var(--d),var(--c));}
+    .p4::after{background:linear-gradient(90deg,var(--c),var(--a));}
+
+    /* SVG fills the panel */
+    .panel svg{
+      position:absolute;top:0;left:0;
+      width:100%;height:100%;
+      display:block;
+    }
+
+    /* Overlay — always visible */
+    .po{
+      position:absolute;bottom:0;left:0;right:0;
+      padding:20px 28px 18px;
+      background:linear-gradient(to top,rgba(5,6,14,.98) 0%,rgba(5,6,14,.8) 50%,transparent 100%);
+      z-index:5;
+    }
+    .ptag{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px;display:block;}
+    .p1 .ptag{color:var(--a)}.p2 .ptag{color:var(--b)}.p3 .ptag{color:var(--d)}.p4 .ptag{color:var(--c)}
+    .ph{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(15px,1.8vw,22px);font-weight:800;letter-spacing:-.4px;line-height:1.2;color:var(--text);margin-bottom:0;}
+    .ps{font-size:12px;color:var(--soft);font-weight:300;line-height:1.5;
+      max-height:0;overflow:hidden;opacity:0;
+      transition:max-height .4s ease,opacity .4s ease,margin-top .4s ease;
+      margin-top:0;
+    }
+    .panel.active .ps{max-height:52px;opacity:1;margin-top:5px;}
+
+    /* Carousel navigation */
+    .car-nav{
+      display:flex;align-items:center;justify-content:center;
+      gap:16px;padding:20px 0 14px;
+    }
+    .c-arr{
+      width:42px;height:42px;border-radius:50%;
+      border:1px solid var(--border);background:var(--surf);
+      color:var(--soft);font-size:17px;
+      display:flex;align-items:center;justify-content:center;
+      cursor:none;transition:all .2s;user-select:none;
+    }
+    .c-arr:hover{border-color:var(--a);color:var(--text);background:rgba(108,92,231,.08);}
+    .c-dots{display:flex;gap:8px;align-items:center;}
+    .c-dot{
+      width:7px;height:7px;border-radius:50%;
+      background:var(--muted);transition:all .28s;cursor:none;
+    }
+    .c-dot.on{background:var(--a);width:22px;border-radius:4px;}
+
+    /* WHY */
+    .sec2{padding:96px 52px;max-width:1080px;margin:0 auto;}
+    .wtag{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--a);margin-bottom:14px;font-weight:700;display:flex;align-items:center;gap:10px;}
+    .wtag::before{content:"";width:18px;height:1px;background:var(--a);}
+    .wtitle{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(26px,3.8vw,48px);font-weight:800;letter-spacing:-2px;line-height:1.03;margin-bottom:44px;}
+    .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);border:1px solid var(--border);border-radius:22px;overflow:hidden;}
+    .wcard{background:var(--surf);padding:34px 30px;position:relative;overflow:hidden;transition:background .3s;}
+    .wcard:hover{background:rgba(108,92,231,.04);}
+    .wcard::before{content:"";position:absolute;width:150px;height:150px;border-radius:50%;filter:blur(45px);top:-50px;right:-50px;opacity:0;transition:opacity .4s;}
+    .wcard:nth-child(1)::before{background:rgba(108,92,231,.2);}
+    .wcard:nth-child(2)::before{background:rgba(232,67,147,.18);}
+    .wcard:nth-child(3)::before{background:rgba(0,203,169,.18);}
+    .wcard:nth-child(4)::before{background:rgba(245,166,35,.18);}
+    .wcard:hover::before{opacity:1;}
+    .wi{font-size:30px;margin-bottom:12px;display:block;animation:iFlt 4.5s ease-in-out infinite;}
+    .wcard:nth-child(2) .wi{animation-delay:.8s}.wcard:nth-child(3) .wi{animation-delay:1.6s}.wcard:nth-child(4) .wi{animation-delay:2.4s}
+    @keyframes iFlt{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+    .wh{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;letter-spacing:-.4px;margin-bottom:7px;}
+    .wd{font-size:13px;color:var(--soft);line-height:1.75;font-weight:300;}
+
+    /* FEATURES */
+    .feats{padding:0 52px 96px;max-width:1080px;margin:0 auto;}
+    .glabel{font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:2px;}
+    .frow{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);border:1px solid var(--border);border-radius:22px;overflow:hidden;margin-bottom:20px;}
+    .fc{background:var(--surf);padding:28px 24px;position:relative;overflow:hidden;transition:background .3s;}
+    .fc:hover{background:rgba(108,92,231,.04);}
+    .fcg{position:absolute;width:120px;height:120px;border-radius:50%;filter:blur(40px);top:-40px;right:-40px;opacity:0;transition:opacity .4s;}
+    .fc:hover .fcg{opacity:1;}
+    .fci{font-size:26px;margin-bottom:11px;display:block;animation:iFlt 4.5s ease-in-out infinite;}
+    .fc:nth-child(2) .fci{animation-delay:.6s}.fc:nth-child(3) .fci{animation-delay:1.2s}
+    .fct{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;letter-spacing:-.3px;margin-bottom:5px;}
+    .fcd{font-size:12px;color:var(--soft);line-height:1.75;font-weight:300;}
+
+    /* QUOTE */
+    .qsec{padding:96px 52px;text-align:center;position:relative;overflow:hidden;}
+    .qbg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(108,92,231,.07) 0%,transparent 70%);pointer-events:none;}
+    .qrings{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+    .qr{position:absolute;border-radius:50%;border:1px solid rgba(108,92,231,.06);transform:translate(-50%,-50%);animation:rPulse 4.5s ease-in-out infinite;}
+    .qr1{width:260px;height:260px}.qr2{width:460px;height:460px;animation-delay:.9s;border-color:rgba(232,67,147,.04)}.qr3{width:660px;height:660px;animation-delay:1.8s;border-color:rgba(0,203,169,.03)}
+    @keyframes rPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}50%{transform:translate(-50%,-50%) scale(1.05);opacity:1}}
+    .qmark{font-family:"Bricolage Grotesque",sans-serif;font-size:80px;line-height:.8;background:linear-gradient(135deg,var(--a),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:10px;position:relative;z-index:1;}
+    .qtxt{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(22px,3.5vw,44px);font-weight:800;letter-spacing:-2px;line-height:1.1;max-width:580px;margin:0 auto 14px;position:relative;z-index:1;}
+    .qattr{font-size:12px;color:var(--muted);position:relative;z-index:1;font-weight:300;}
+
+    /* CTA */
+    .ctasec{padding:120px 52px;text-align:center;position:relative;overflow:hidden;}
+    .ctabg{position:absolute;inset:0;background:radial-gradient(ellipse 72% 52% at 50% 50%,rgba(108,92,231,.08) 0%,transparent 70%);pointer-events:none;}
+    .ctah{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(36px,6.5vw,82px);font-weight:800;letter-spacing:-3.5px;line-height:.9;margin-bottom:18px;position:relative;z-index:1;}
+    .ctasub{font-size:15px;color:var(--soft);margin-bottom:42px;position:relative;z-index:1;font-weight:300;}
+    footer{border-top:1px solid var(--border);padding:24px 52px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted);}
+    .rev{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease;}
+    .rev.in{opacity:1;transform:translateY(0);}
+
+    @media(max-width:900px){.panel{height:400px;}.wgrid,.frow{grid-template-columns:1fr;}}
+    @media(max-width:768px){nav{padding:14px 18px;}.sym,.fcard{display:none;}.sec2,.feats,.qsec,.ctasec{padding:60px 18px;}footer{flex-direction:column;gap:8px;text-align:center;}body{cursor:auto;}#cur,#cur-r{display:none;}h1{letter-spacing:-2.5px;}.ps{max-height:none!important;opacity:1!important;margin-top:4px!important;}}
+  </style>
+</head>
+<body>
+<div id="cur"></div><div id="cur-r"></div>
+<div class="gbg"></div>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+<div class="wrap">
+
+<nav>
+  <div class="logo">LearnMate</div>
+  <a href="https://learnwithme-eight.vercel.app" class="nav-btn">Try free &#8599;</a>
+</nav>
+
+<section class="hero">
+  <span class="sym" style="font-size:24px;color:rgba(108,92,231,.5);top:22%;left:7%;animation-duration:9s;font-family:serif;">&#8721;</span>
+  <span class="sym" style="font-size:20px;color:rgba(232,67,147,.45);top:28%;right:9%;animation-duration:11s;animation-delay:2s;">&#9879;&#65039;</span>
+  <span class="sym" style="font-size:28px;color:rgba(0,203,169,.4);top:64%;left:5%;animation-duration:13s;animation-delay:4s;font-family:serif;">&#8730;</span>
+  <span class="sym" style="font-size:18px;color:rgba(245,166,35,.45);top:68%;right:7%;animation-duration:10s;animation-delay:1s;">&#129514;</span>
+  <span class="sym" style="font-size:22px;color:rgba(108,92,231,.38);top:44%;left:11%;animation-duration:12s;animation-delay:3s;font-family:serif;">&#8734;</span>
+  <span class="sym" style="font-size:20px;color:rgba(232,67,147,.38);top:25%;right:16%;animation-duration:8s;animation-delay:5s;">&#9835;</span>
+  <span class="sym" style="font-size:16px;color:rgba(0,203,169,.44);top:78%;left:16%;animation-duration:14s;animation-delay:2s;font-family:serif;">&#960;</span>
+  <span class="sym" style="font-size:24px;color:rgba(245,166,35,.33);top:17%;right:25%;animation-duration:10s;animation-delay:6s;">&#128301;</span>
+  <span class="sym" style="font-size:18px;color:rgba(108,92,231,.38);top:55%;right:11%;animation-duration:15s;animation-delay:1s;font-family:serif;">&#916;</span>
+  <span class="sym" style="font-size:20px;color:rgba(232,67,147,.38);top:82%;right:20%;animation-duration:9s;animation-delay:7s;">&#9883;&#65039;</span>
+
+  <div class="fcard" style="top:23%;left:2%;animation-duration:7.5s;"><span class="v" style="color:var(--c)">&#10003;</span><span style="color:var(--soft)">clicked. it clicked.</span></div>
+  <div class="fcard" style="top:19%;right:2%;animation-duration:8s;animation-delay:-3s;"><span class="v" style="color:var(--d)">&#128293; 12</span><span style="color:var(--soft)">day streak</span></div>
+  <div class="fcard" style="bottom:31%;left:1.5%;animation-duration:9s;animation-delay:-5s;"><span class="v" style="color:var(--a)">+25 XP</span><span style="color:var(--soft)">just now</span></div>
+  <div class="fcard" style="bottom:27%;right:2%;animation-duration:7s;animation-delay:-2s;"><span class="v" style="color:var(--b)">92%</span><span style="color:var(--soft)">Brain Duel</span></div>
+
+  <div class="badge"><span class="bdot"></span>Free forever &middot; No sign-up to try</div>
+  <h1>Finally<br/>understand<br/><span class="g">anything.</span></h1>
+  <p class="hsub">You&#8217;re not behind. You just haven&#8217;t found the explanation that works <em>for you</em>. Yet.</p>
+  <div class="hbtns">
+    <a href="https://learnwithme-eight.vercel.app" class="bcta">Ask something right now &#8599;</a>
+    <a href="#story" class="bsec">See how it helps</a>
+  </div>
+  <p class="htrust">&#10003; Free &nbsp;&middot;&nbsp; &#10003; No downloads &nbsp;&middot;&nbsp; &#10003; Works in 10 seconds</p>
+  <div class="cwin">
+    <div class="cbar">
+      <div class="cd" style="background:#34d399"></div>
+      <div class="cd" style="background:#fbbf24"></div>
+      <div class="cd" style="background:#f87171"></div>
+      <span class="clbl">LearnMate &middot; always here</span>
+    </div>
+    <div class="cmsgs">
+      <div class="cm u">i&#8217;ve read this three times. i still don&#8217;t get it &#128553;</div>
+      <div class="cm b">That&#8217;s not on you &#8212; the way it&#8217;s usually explained doesn&#8217;t work for most people. Let me show you a different angle. Ready in 30 seconds.</div>
+      <div class="cm u">WAIT. that&#8217;s what it means?? why didn&#8217;t anyone say that &#128557;&#128293;</div>
+    </div>
+  </div>
+  <div class="scue"><span>scroll</span><div class="sline"></div></div>
+</section>
+
+<div class="twrap">
+  <div class="tick">
+    <span class="ti"><span class="td"></span>Explains your way</span><span class="ti"><span class="td"></span>Remembers your gaps</span><span class="ti"><span class="td"></span>Connects to your goals</span><span class="ti"><span class="td"></span>Brain Duel quizzes</span><span class="ti"><span class="td"></span>Exam rescue mode</span><span class="ti"><span class="td"></span>Real world challenges</span><span class="ti"><span class="td"></span>Progress tracking</span><span class="ti"><span class="td"></span>Streaks &amp; XP</span><span class="ti"><span class="td"></span>100% free</span>
+    <span class="ti"><span class="td"></span>Explains your way</span><span class="ti"><span class="td"></span>Remembers your gaps</span><span class="ti"><span class="td"></span>Connects to your goals</span><span class="ti"><span class="td"></span>Brain Duel quizzes</span><span class="ti"><span class="td"></span>Exam rescue mode</span><span class="ti"><span class="td"></span>Real world challenges</span><span class="ti"><span class="td"></span>Progress tracking</span><span class="ti"><span class="td"></span>Streaks &amp; XP</span><span class="ti"><span class="td"></span>100% free</span>
+  </div>
+</div>
+
+<section class="story" id="story">
+  <div class="story-head">
+    <div class="s-tag rev">Four moments. One answer.</div>
+    <h2 class="s-title rev">You&#8217;ve felt at least one of these.<br/><span style="color:var(--a)">Someone always had the answer. Now it&#8217;s always with you.</span></h2>
+  </div>
+
+  <div class="car-outer">
+  <div class="panels" id="ctrack">
+
+    <!-- P1: DAYDREAMER + FRIEND -->
+    <div class="panel p1 rev">
+      <svg viewBox="0 0 560 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="g_sky1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#08093a"/>
+            <stop offset="100%" stop-color="#16196a"/>
+          </linearGradient>
+        </defs>
+
+        <!-- background -->
+        <rect width="560" height="400" fill="#080914"/>
+        <!-- floor -->
+        <rect x="0" y="345" width="560" height="55" fill="#06061a"/>
+        <line x1="0" y1="345" x2="560" y2="345" stroke="#10102a" stroke-width="2"/>
+        <!-- purple glow right side (friend zone) -->
+        <ellipse cx="450" cy="280" rx="180" ry="160" fill="rgba(108,92,231,0.07)"/>
+
+        <!-- WINDOW — top-left corner, completely unobstructed -->
+        <!-- nothing else touches x=20-175, y=20-195 -->
+        <rect x="20" y="20" width="154" height="174" rx="6" fill="url(#g_sky1)"/>
+        <rect x="20" y="20" width="154" height="174" rx="6" fill="none" stroke="#2a2d6a" stroke-width="2.5"/>
+        <line x1="97" y1="20" x2="97" y2="194" stroke="#2a2d6a" stroke-width="1.5"/>
+        <line x1="20" y1="107" x2="174" y2="107" stroke="#2a2d6a" stroke-width="1.5"/>
+        <!-- stars inside window -->
+        <circle cx="42" cy="44" r="1.2" fill="#fff" opacity=".7"/>
+        <circle cx="70" cy="34" r=".9" fill="#fff" opacity=".5"/>
+        <circle cx="128" cy="40" r="1.4" fill="#fff" opacity=".8"/>
+        <circle cx="158" cy="58" r="1" fill="#fff" opacity=".6"/>
+        <circle cx="48" cy="76" r=".9" fill="#fff" opacity=".4"/>
+        <circle cx="150" cy="70" r=".7" fill="#fff" opacity=".5"/>
+        <circle cx="80" cy="148" r=".8" fill="#fff" opacity=".4"/>
+        <circle cx="155" cy="160" r="1" fill="#fff" opacity=".4"/>
+        <!-- moon -->
+        <circle cx="150" cy="58" r="18" fill="#1a1e5a"/>
+        <circle cx="158" cy="52" r="14" fill="#08093a"/>
+
+        <!-- FRIEND SPEECH BUBBLE — top-RIGHT, x=288-536, y=20-158 -->
+        <!-- completely in right half, no overlap with window -->
+        <rect x="288" y="20" width="248" height="138" rx="14" fill="#101e36" stroke="#00cba9" stroke-width="1.8"/>
+        <!-- tail points DOWN toward friend (friend head is at ~x=454, y=228) -->
+        <polygon points="430,158 420,178 446,164" fill="#101e36" stroke="#00cba9" stroke-width="1.8"/>
+        <text x="412" y="52" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="14" fill="#e0e4f4">Ask LearnMate</text>
+        <text x="412" y="74" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="14" fill="#e0e4f4">where this shows up</text>
+        <text x="412" y="96" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="14" fill="#e0e4f4">in your field.</text>
+        <text x="412" y="130" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="16" fill="#00cba9" font-weight="700">It&#8217;ll change everything.</text>
+
+        <!-- DESK — spans student area -->
+        <rect x="20" y="316" width="280" height="13" rx="4" fill="#12102a"/>
+        <rect x="28" y="328" width="9" height="60" rx="2" fill="#0e0c22"/>
+        <rect x="284" y="328" width="9" height="60" rx="2" fill="#0e0c22"/>
+        <!-- book on desk -->
+        <rect x="44" y="296" width="100" height="22" rx="3" fill="#1a1632"/>
+        <rect x="44" y="296" width="50" height="22" rx="3" fill="#1c1836"/>
+        <text x="70" y="311" text-anchor="middle" font-family="serif" font-size="8" fill="#6c5ce7" opacity=".7" font-weight="bold">y = mx + b</text>
+
+        <!-- STUDENT — bottom-left, seated at desk -->
+        <!-- body -->
+        <rect x="58" y="258" width="32" height="50" rx="8" fill="#2a1a5a"/>
+        <!-- upper arm down -->
+        <rect x="49" y="274" width="10" height="36" rx="5" fill="#221648"/>
+        <!-- forearm on desk -->
+        <rect x="34" y="308" width="36" height="10" rx="5" fill="#c9956b"/>
+        <!-- head — resting on hand, dreamy, looking toward window -->
+        <circle cx="82" cy="242" r="26" fill="#c9956b"/>
+        <path d="M56 233 Q58 213 82 216 Q106 213 108 233" fill="#1a0a00"/>
+        <ellipse cx="82" cy="222" rx="27" ry="11" fill="#1a0a00"/>
+        <!-- ear left side (faces left toward window) -->
+        <ellipse cx="56" cy="242" rx="4" ry="5.5" fill="#b8855f"/>
+        <!-- eye dreamy half-lid -->
+        <ellipse cx="91" cy="242" rx="5" ry="3.5" fill="#fff" opacity=".9"/>
+        <circle cx="93" cy="242" r="2.4" fill="#2a1500"/>
+        <circle cx="93.8" cy="241" r=".7" fill="#fff"/>
+        <path d="M86 240 Q91 237.5 96 240" stroke="#1a0a00" stroke-width="1.8" fill="rgba(26,10,0,0.5)" stroke-linecap="round"/>
+        <!-- soft smile -->
+        <path d="M76 254 Q82 258 88 254" stroke="#a07050" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+
+        <!-- STUDENT THOUGHT BUBBLE
+             STARTS BELOW WINDOW (window bottom = y=194)
+             Zone: x=20-280, y=200-320
+             Dot trail from head upward, bubble sits in clear space below window -->
+        <circle cx="102" cy="228" r="4" fill="#1e1840" stroke="#6c5ce7" stroke-width="1.1" opacity=".82"/>
+        <circle cx="118" cy="215" r="5.5" fill="#1e1840" stroke="#6c5ce7" stroke-width="1.2" opacity=".9"/>
+        <circle cx="136" cy="202" r="7.5" fill="#1e1840" stroke="#6c5ce7" stroke-width="1.3"/>
+        <!-- bubble box — y=200 is BELOW window (y=194) — no overlap -->
+        <rect x="140" y="200" width="210" height="106" rx="14" fill="#14103a" stroke="#6c5ce7" stroke-width="1.6"/>
+        <!-- tail points DOWN-LEFT toward dot trail -->
+        <polygon points="148,306 138,326 164,312" fill="#14103a" stroke="#6c5ce7" stroke-width="1.6"/>
+        <text x="245" y="232" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13.5" fill="#8a8fa8">I&#8217;m going to be a designer.</text>
+        <text x="245" y="254" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13.5" fill="#8a8fa8">Why does slope</text>
+        <text x="245" y="274" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13.5" fill="#8a8fa8">even matter to me?</text>
+        <text x="245" y="296" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="15" fill="#6c5ce7" font-weight="700">I don&#8217;t see the point.</text>
+
+        <!-- FRIEND — right side, x=420-530, standing -->
+        <rect x="430" y="252" width="34" height="58" rx="9" fill="#1a3a5a" transform="rotate(-4,447,281)"/>
+        <path d="M464 268 Q478 290 480 316" stroke="#d4a574" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <path d="M430 264 Q396 276 370 282" stroke="#d4a574" stroke-width="11" stroke-linecap="round" fill="none"/>
+        <rect x="434" y="308" width="11" height="42" rx="5" fill="#1a3a5a"/>
+        <rect x="452" y="308" width="11" height="42" rx="5" fill="#1a3a5a"/>
+        <!-- head -->
+        <circle cx="448" cy="232" r="26" fill="#d4a574"/>
+        <path d="M422 222 Q424 202 448 205 Q472 202 474 222" fill="#2a1200"/>
+        <ellipse cx="448" cy="209" rx="27" ry="11" fill="#2a1200"/>
+        <!-- eyes facing left -->
+        <ellipse cx="438" cy="232" rx="4.5" ry="3.8" fill="#fff"/>
+        <circle cx="437" cy="232" r="2.4" fill="#2a1500"/>
+        <circle cx="436.2" cy="231" r=".7" fill="#fff"/>
+        <ellipse cx="456" cy="232" rx="4.5" ry="3.8" fill="#fff"/>
+        <circle cx="455" cy="232" r="2.4" fill="#2a1500"/>
+        <circle cx="454.2" cy="231" r=".7" fill="#fff"/>
+        <!-- warm smile -->
+        <path d="M435 244 Q448 252 461 244" stroke="#c07850" stroke-width="2.2" fill="rgba(192,120,80,0.15)" stroke-linecap="round"/>
+      </svg>
+      <div class="po">
+        <span class="ptag">The Daydreamer</span>
+        <div class="ph">"Why am I even learning this?"</div>
+        <div class="ps">LearnMate shows you exactly where every topic lives in the career you&#8217;re building.</div>
+      </div>
+    </div>
+
+        <!-- P2: CLASSROOM -->
+    <div class="panel p2 rev">
+      <svg viewBox="0 0 800 440" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="g2bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#07081a"/>
+            <stop offset="100%" stop-color="#0b0c22"/>
+          </linearGradient>
+          <linearGradient id="g2board" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#062010"/>
+            <stop offset="100%" stop-color="#031208"/>
+          </linearGradient>
+        </defs>
+
+        <!-- ROOM -->
+        <rect width="800" height="440" fill="url(#g2bg)"/>
+        <rect x="0" y="0" width="800" height="10" fill="#030310"/>
+        <rect x="0" y="370" width="800" height="70" fill="#04040e"/>
+        <line x1="0" y1="370" x2="800" y2="370" stroke="#0e0e2a" stroke-width="2"/>
+        <!-- subtle pink glow far right -->
+        <ellipse cx="700" cy="300" rx="140" ry="130" fill="rgba(232,67,147,0.07)"/>
+
+        <!-- ════════════════════════════════
+             ZONE A: BOARD — x=0 to x=240
+             Flush to left wall, full height feel
+        ════════════════════════════════ -->
+        <rect x="0" y="0" width="10" height="440" fill="#030310"/>
+        <rect x="10" y="20" width="230" height="316" rx="3" fill="url(#g2board)"/>
+        <rect x="10" y="20" width="230" height="316" rx="3" fill="none" stroke="#1c5030" stroke-width="2"/>
+        <rect x="6" y="334" width="238" height="8" rx="2" fill="#0e1a10"/>
+        <text x="125" y="80" text-anchor="middle" font-family="serif" font-size="20" fill="#2a8044" opacity=".92">2x&#178; + 3x &#8722; 5 = 0</text>
+        <line x1="24" y1="98" x2="226" y2="98" stroke="#1c5030" stroke-width="1" opacity=".4"/>
+        <text x="125" y="130" text-anchor="middle" font-family="serif" font-size="15" fill="#2a8044" opacity=".7">x = (&#8722;b &#177; &#8730;b&#178;&#8722;4ac)</text>
+        <line x1="60" y1="140" x2="190" y2="140" stroke="#2a8044" stroke-width="1" opacity=".4"/>
+        <text x="125" y="160" text-anchor="middle" font-family="serif" font-size="15" fill="#2a8044" opacity=".7">2a</text>
+        <text x="125" y="198" text-anchor="middle" font-family="serif" font-size="13" fill="#2a8044" opacity=".5">&#8756; x = 1 or x = &#8722;2.5</text>
+        <text x="125" y="228" text-anchor="middle" font-family="serif" font-size="11" fill="#2a8044" opacity=".32">Factor: (2x+5)(x&#8722;1)</text>
+
+        <!-- ════════════════════════════════
+             ZONE B: TEACHER + STUDENTS — x=260 to x=530
+             Teacher at x=270, then 3 students seated at desks
+        ════════════════════════════════ -->
+
+        <!-- TEACHER x=270-310 -->
+        <rect x="272" y="272" width="28" height="68" rx="7" fill="#223060"/>
+        <path d="M272 284 Q252 260 230 232" stroke="#d4a878" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <path d="M300 286 Q310 308 312 340" stroke="#d4a878" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <rect x="276" y="338" width="9" height="34" rx="4" fill="#223060"/>
+        <rect x="289" y="338" width="9" height="34" rx="4" fill="#223060"/>
+        <circle cx="286" cy="256" r="22" fill="#d4a878"/>
+        <path d="M264 249 Q266 231 286 233 Q306 231 308 249" fill="#1a0e00"/>
+        <ellipse cx="286" cy="237" rx="23" ry="9" fill="#1a0e00"/>
+        <ellipse cx="296" cy="256" rx="4" ry="3.2" fill="#fff"/>
+        <circle cx="297" cy="256" r="2" fill="#1a0e00"/>
+        <path d="M282 268 Q288 272 295 269" stroke="#b07840" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+
+        <!-- Student S1 x=340 -->
+        <rect x="330" y="316" width="64" height="8" rx="3" fill="#181636"/>
+        <rect x="337" y="323" width="7" height="48" rx="2" fill="#121028"/>
+        <rect x="387" y="323" width="7" height="48" rx="2" fill="#121028"/>
+        <rect x="340" y="282" width="26" height="36" rx="7" fill="#1e3a6a"/>
+        <circle cx="353" cy="268" r="19" fill="#d4a574"/>
+        <path d="M334 261 Q336 245 353 247 Q370 245 372 261" fill="#0d0800"/>
+        <ellipse cx="353" cy="251" rx="20" ry="8" fill="#0d0800"/>
+
+        <!-- Student S2 x=418 -->
+        <rect x="408" y="320" width="62" height="8" rx="3" fill="#181636"/>
+        <rect x="415" y="327" width="7" height="44" rx="2" fill="#121028"/>
+        <rect x="463" y="327" width="7" height="44" rx="2" fill="#121028"/>
+        <rect x="418" y="286" width="26" height="36" rx="7" fill="#2a1860"/>
+        <circle cx="431" cy="272" r="19" fill="#b8875a"/>
+        <path d="M412 265 Q414 249 431 251 Q448 249 450 265" fill="#180800"/>
+        <ellipse cx="431" cy="255" rx="20" ry="8" fill="#180800"/>
+
+        <!-- Student S3 x=496 -->
+        <rect x="486" y="322" width="60" height="8" rx="3" fill="#181636"/>
+        <rect x="493" y="329" width="7" height="42" rx="2" fill="#121028"/>
+        <rect x="539" y="329" width="7" height="42" rx="2" fill="#121028"/>
+        <rect x="496" y="288" width="26" height="36" rx="7" fill="#2a3870"/>
+        <circle cx="509" cy="274" r="19" fill="#c9a070"/>
+        <path d="M490 267 Q492 251 509 253 Q526 251 528 267" fill="#200800"/>
+        <ellipse cx="509" cy="257" rx="20" ry="8" fill="#200800"/>
+
+        <!-- ════════════════════════════════
+             ZONE C: BACK BENCH — x=580 to x=740
+             Clearly separated, alone, slumped
+             Dark separator band x=554-580
+        ════════════════════════════════ -->
+        <rect x="554" y="270" width="26" height="170" fill="rgba(0,0,0,0.22)"/>
+
+        <rect x="582" y="328" width="110" height="9" rx="3" fill="#181636"/>
+        <rect x="590" y="336" width="8" height="36" rx="2" fill="#121028"/>
+        <rect x="684" y="336" width="8" height="36" rx="2" fill="#121028"/>
+        <rect x="600" y="316" width="58" height="12" rx="2" fill="#0f0e22"/>
+        <rect x="606" y="320" width="36" height="2" rx="1" fill="#26234a" opacity=".5"/>
+
+        <!-- back student body -->
+        <rect x="604" y="286" width="32" height="46" rx="9" fill="#1a1448"/>
+        <path d="M604 300 Q592 316 590 328" stroke="#c9956b" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <!-- head bowed -->
+        <circle cx="620" cy="268" r="25" fill="#c9956b" transform="rotate(7,620,268)"/>
+        <path d="M595 260 Q597 240 620 243 Q643 240 645 260" fill="#1a0a00"/>
+        <ellipse cx="620" cy="247" rx="26" ry="10" fill="#1a0a00"/>
+        <ellipse cx="610" cy="270" rx="4.5" ry="3" fill="#fff" opacity=".78"/>
+        <circle cx="609.5" cy="271" r="2.2" fill="#2a1500"/>
+        <ellipse cx="630" cy="270" rx="4.5" ry="3" fill="#fff" opacity=".78"/>
+        <circle cx="629.5" cy="271" r="2.2" fill="#2a1500"/>
+        <path d="M606 269 Q610 267.5 615 269" stroke="#1a0a00" stroke-width="1.6" fill="rgba(26,10,0,.4)"/>
+        <path d="M626 269 Q630 267.5 635 269" stroke="#1a0a00" stroke-width="1.6" fill="rgba(26,10,0,.4)"/>
+        <path d="M610 282 Q620 279 630 282" stroke="#a07050" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+
+        <!-- ════════════════════════════════
+             THOUGHT BUBBLE — from back student
+             TOP-RIGHT: x=570-790, y=14-170
+             Dot trail goes straight UP from student head
+        ════════════════════════════════ -->
+        <circle cx="628" cy="238" r="4" fill="#1e1028" stroke="#e84393" stroke-width="1.2" opacity=".82"/>
+        <circle cx="630" cy="216" r="6" fill="#1e1028" stroke="#e84393" stroke-width="1.3" opacity=".9"/>
+        <circle cx="632" cy="192" r="8" fill="#1e1028" stroke="#e84393" stroke-width="1.4"/>
+        <rect x="570" y="14" width="218" height="148" rx="16" fill="#1a0e28" stroke="#e84393" stroke-width="2"/>
+        <polygon points="636,162 628,184 650,168" fill="#1a0e28" stroke="#e84393" stroke-width="2"/>
+        <text x="679" y="56" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="16" fill="#8a8fa8">Everyone gets it</text>
+        <text x="679" y="80" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="16" fill="#8a8fa8">but me.</text>
+        <text x="679" y="114" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="18" fill="#e84393" font-weight="700">I&#8217;ve been lost</text>
+        <text x="679" y="140" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="18" fill="#e84393" font-weight="700">for weeks.</text>
+
+        <!-- ════════════════════════════════
+             MASCOT + SPEECH BUBBLE
+             Mascot: x=310-370, y=130-196 — above Zone B students, below nothing
+             Speech bubble: x=10-300, y=110-230 — top-left, above board equations area
+             Tail from bubble goes RIGHT toward mascot
+             
+             ZONE CHECK:
+             - Board equations are y=80-240 at x=10-240
+             - Bubble is x=10-300 overlapping board x zone
+             - SOLUTION: Put bubble ABOVE board content (board text starts y=80)
+               Bubble y=10-106 — above all board text ✓
+             - Mascot at x=316, y=20-84 — right of board, above students ✓
+        ════════════════════════════════ -->
+
+        <!-- Mascot: cx=340, cy=56 — top centre between board and thought bubble -->
+        <circle cx="340" cy="58" r="38" fill="rgba(232,67,147,0.06)"/>
+        <circle cx="340" cy="58" r="27" fill="#1e1040" stroke="#e84393" stroke-width="2"/>
+        <ellipse cx="330" cy="54" rx="4.5" ry="5" fill="#fff"/>
+        <circle cx="331.5" cy="54" r="2.9" fill="#2a1500"/>
+        <circle cx="332.3" cy="52.8" r=".85" fill="#fff"/>
+        <ellipse cx="350" cy="54" rx="4.5" ry="5" fill="#fff"/>
+        <circle cx="351.5" cy="54" r="2.9" fill="#2a1500"/>
+        <circle cx="352.3" cy="52.8" r=".85" fill="#fff"/>
+        <path d="M328 67 Q340 75 352 67" stroke="#e84393" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <line x1="333" y1="32" x2="327" y2="18" stroke="#e84393" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="327" cy="16" r="3.5" fill="#e84393" opacity=".9"/>
+        <line x1="347" y1="32" x2="353" y2="18" stroke="#e84393" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="353" cy="16" r="3.5" fill="#e84393" opacity=".9"/>
+        <circle cx="308" cy="50" r="3" fill="#e84393" opacity=".8"/>
+        <circle cx="372" cy="50" r="3" fill="#e84393" opacity=".8"/>
+
+        <!-- Speech bubble: x=300-540, y=92-184
+             LEFT of thought bubble (thought bubble x=570) — 30px gap ✓
+             RIGHT of board (board ends x=240) — 60px gap ✓
+             BELOW mascot (mascot bottom y=86) — 6px gap ✓
+             ABOVE students (students y=268+) — 84px gap ✓ -->
+        <rect x="300" y="132" width="240" height="90" rx="12" fill="#1a0e28" stroke="#e84393" stroke-width="2"/>
+        <!-- dot trail connecting mascot to bubble -->
+        <circle cx="338" cy="97" r="4" fill="#1a0e28" stroke="#e84393" stroke-width="1.5" opacity=".85"/>
+        <circle cx="336" cy="111" r="6" fill="#1a0e28" stroke="#e84393" stroke-width="1.5" opacity=".92"/>
+        <circle cx="333" cy="127" r="8" fill="#1a0e28" stroke="#e84393" stroke-width="1.8"/>
+        <text x="420" y="162" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="14" fill="#e8eaf6">Hey. I noticed.</text>
+        <text x="420" y="183" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="14" fill="#e8eaf6">Let&#8217;s start from</text>
+        <text x="420" y="208" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="16" fill="#e84393" font-weight="700">exactly where you are.</text>
+      </svg>
+      <div class="po">
+        <span class="ptag">The Lost One</span>
+        <div class="ph">"Nobody knows I&#8217;m lost."</div>
+        <div class="ps">LearnMate quietly figures out where you are and starts there. No one needs to know.</div>
+      </div>
+    </div>
+
+        <!-- P3: PANICKER + PARENT IN DOORWAY — wide spacing, no phone -->
+    <div class="panel p3 rev">
+      <svg viewBox="0 0 560 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="g_night3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#04060f"/>
+            <stop offset="100%" stop-color="#080b18"/>
+          </linearGradient>
+        </defs>
+        <rect width="560" height="400" fill="#06070f"/>
+        <!-- red stress glow — left where student is -->
+        <ellipse cx="180" cy="220" rx="200" ry="180" fill="rgba(248,113,113,0.05)"/>
+        <!-- teal relief glow — right where parent/door is -->
+        <ellipse cx="480" cy="220" rx="180" ry="160" fill="rgba(0,203,169,0.07)"/>
+
+        <!-- WINDOW — top-left corner -->
+        <rect x="22" y="22" width="120" height="96" rx="4" fill="url(#g_night3)"/>
+        <rect x="22" y="22" width="120" height="96" rx="4" fill="none" stroke="#181b3a" stroke-width="2"/>
+        <line x1="82" y1="22" x2="82" y2="118" stroke="#181b3a" stroke-width="1.5"/>
+        <line x1="22" y1="70" x2="142" y2="70" stroke="#181b3a" stroke-width="1.5"/>
+        <circle cx="38" cy="36" r=".9" fill="#fff" opacity=".5"/>
+        <circle cx="58" cy="28" r="1.2" fill="#fff" opacity=".7"/>
+        <circle cx="112" cy="34" r=".7" fill="#fff" opacity=".5"/>
+        <circle cx="134" cy="48" r="1" fill="#fff" opacity=".8"/>
+        <circle cx="44" cy="58" r=".6" fill="#fff" opacity=".4"/>
+
+        <!-- CLOCK — top-centre wall, 11:47 -->
+        <circle cx="200" cy="66" r="42" fill="#0c0e20" stroke="#22254a" stroke-width="2.5"/>
+        <circle cx="200" cy="66" r="35" fill="none" stroke="#1a1d3a" stroke-width="1"/>
+        <line x1="200" y1="24" x2="200" y2="34" stroke="#2e3155" stroke-width="2.5"/>
+        <line x1="200" y1="98" x2="200" y2="108" stroke="#2e3155" stroke-width="2.5"/>
+        <line x1="158" y1="66" x2="168" y2="66" stroke="#2e3155" stroke-width="2.5"/>
+        <line x1="232" y1="66" x2="242" y2="66" stroke="#2e3155" stroke-width="2.5"/>
+        <line x1="200" y1="66" x2="186" y2="36" stroke="#f87171" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="200" y1="66" x2="184" y2="52" stroke="#f87171" stroke-width="3.2" stroke-linecap="round"/>
+        <circle cx="200" cy="66" r="4.5" fill="#f87171"/>
+        <circle cx="200" cy="66" r="46" fill="none" stroke="#f87171" stroke-width=".8" opacity=".15"/>
+
+        <!-- DESK — left half only (student's desk) -->
+        <rect x="22" y="316" width="330" height="14" rx="4" fill="#100e24"/>
+        <rect x="30" y="329" width="10" height="62" rx="3" fill="#0c0a1e"/>
+        <rect x="336" y="329" width="10" height="62" rx="3" fill="#0c0a1e"/>
+        <!-- scattered papers — chaos on left half -->
+        <rect x="50" y="296" width="86" height="20" rx="3" fill="#130f2a" transform="rotate(-8,93,306)"/>
+        <rect x="78" y="288" width="80" height="20" rx="3" fill="#15112e" transform="rotate(5,118,298)"/>
+        <rect x="200" y="294" width="78" height="18" rx="3" fill="#130f2a" transform="rotate(8,239,303)"/>
+        <text x="58" y="305" font-size="6" fill="#30286a" opacity=".6" transform="rotate(-8,93,306)">Chapter 1&#8211;12 &bull; All topics</text>
+
+        <!-- ── STUDENT — far LEFT, stressed ── -->
+        <!-- body -->
+        <rect x="100" y="234" width="36" height="54" rx="9" fill="#3a1060"/>
+        <!-- arms in hair — stressed gesture -->
+        <path d="M100 248 Q78 224 72 200" stroke="#c9956b" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <path d="M136 248 Q158 224 164 200" stroke="#c9956b" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <!-- head -->
+        <circle cx="118" cy="218" r="28" fill="#c9956b"/>
+        <!-- messy stressed hair -->
+        <path d="M90 208 Q92 182 118 186 Q144 182 146 208" fill="#1a0a00"/>
+        <path d="M90 204 Q86 194 92 186" stroke="#1a0a00" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M146 204 Q150 194 144 186" stroke="#1a0a00" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M103 186 Q100 176 97 170" stroke="#1a0a00" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <path d="M128 185 Q130 175 134 169" stroke="#1a0a00" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <!-- wide scared eyes -->
+        <ellipse cx="108" cy="218" rx="5.5" ry="5" fill="#fff"/>
+        <circle cx="108" cy="218" r="3" fill="#2a1400"/>
+        <ellipse cx="128" cy="218" rx="5.5" ry="5" fill="#fff"/>
+        <circle cx="128" cy="218" r="3" fill="#2a1400"/>
+        <!-- stressed brows -->
+        <path d="M103 209 Q108 206.5 113 209" stroke="#1a0a00" stroke-width="2" fill="none"/>
+        <path d="M123 209 Q128 206.5 133 209" stroke="#1a0a00" stroke-width="2" fill="none"/>
+        <!-- worried mouth -->
+        <path d="M108 233 Q118 229 128 233" stroke="#a07050" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+
+        <!-- STUDENT THOUGHT BUBBLE — top-LEFT zone, x=22-270, y=28-150 -->
+        <!-- dot trail going up-right from student head -->
+        <circle cx="144" cy="202" r="4" fill="#200a14" stroke="#f87171" stroke-width="1" opacity=".8"/>
+        <circle cx="160" cy="188" r="5.5" fill="#200a14" stroke="#f87171" stroke-width="1.1" opacity=".88"/>
+        <circle cx="178" cy="172" r="7" fill="#200a14" stroke="#f87171" stroke-width="1.2"/>
+        <!-- bubble box stays LEFT — x=22 to x=268, y=26 to y=148 -->
+        <rect x="22" y="26" width="230" height="118" rx="14" fill="#1a0810" stroke="#f87171" stroke-width="1.6"/>
+        <!-- tail below-right of bubble -->
+        <polygon points="184,144 176,164 196,150" fill="#1a0810" stroke="#f87171" stroke-width="1.6"/>
+        <text x="137" y="56" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#8a8fa8">9 hours. Whole syllabus.</text>
+        <text x="137" y="76" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#8a8fa8">Haven&#8217;t touched any of it.</text>
+        <text x="137" y="104" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="15" fill="#f87171" font-weight="700">Where do I</text>
+        <text x="137" y="126" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="15" fill="#f87171" font-weight="700">even start?</text>
+
+        <!-- ── DOOR FRAME — right side of room ── -->
+        <rect x="436" y="0" width="124" height="400" fill="#08091a"/>
+        <rect x="436" y="0" width="4" height="400" fill="#141432"/>
+        <!-- door opening — lighter inside -->
+        <rect x="440" y="0" width="120" height="336" fill="#070e0c"/>
+        <!-- warm teal light from inside -->
+        <rect x="436" y="0" width="6" height="336" fill="rgba(0,203,169,0.16)"/>
+        <!-- door handle -->
+        <circle cx="448" cy="200" r="6" fill="#2a2848" stroke="#3a3858" stroke-width="1.2"/>
+
+        <!-- ── PARENT — standing inside doorway, facing LEFT toward student ── -->
+        <!-- body -->
+        <rect x="462" y="238" width="36" height="62" rx="10" fill="#1a3a5a"/>
+        <!-- left arm extending LEFT toward student (gesture, not holding anything) -->
+        <path d="M462 256 Q430 266 404 272" stroke="#d4a878" stroke-width="11" stroke-linecap="round" fill="none"/>
+        <!-- right arm natural -->
+        <path d="M498 260 Q506 278 508 302" stroke="#d4a878" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <!-- legs -->
+        <rect x="466" y="298" width="12" height="40" rx="5" fill="#1a3a5a"/>
+        <rect x="482" y="298" width="12" height="40" rx="5" fill="#1a3a5a"/>
+        <!-- head — facing LEFT -->
+        <circle cx="480" cy="220" r="26" fill="#d4a878"/>
+        <path d="M454 211 Q456 191 480 194 Q504 191 506 211" fill="#3d2010"/>
+        <ellipse cx="480" cy="200" rx="27" ry="11" fill="#3d2010"/>
+        <!-- eyes facing left (kind expression) -->
+        <ellipse cx="470" cy="220" rx="4.5" ry="3.5" fill="#fff"/>
+        <circle cx="469" cy="220" r="2.2" fill="#2a1500"/>
+        <circle cx="468.2" cy="219" r=".65" fill="#fff"/>
+        <ellipse cx="488" cy="220" rx="4.5" ry="3.5" fill="#fff"/>
+        <circle cx="487" cy="220" r="2.2" fill="#2a1500"/>
+        <circle cx="486.2" cy="219" r=".65" fill="#fff"/>
+        <!-- warm smile -->
+        <path d="M467 233 Q480 241 493 233" stroke="#c07850" stroke-width="2.2" fill="rgba(192,120,80,0.15)" stroke-linecap="round"/>
+
+        <!-- PARENT SPEECH BUBBLE — top-RIGHT zone, x=288-534, y=26-162 -->
+        <!-- completely separated from student thought bubble (student bubble x max=252) -->
+        <rect x="288" y="26" width="242" height="136" rx="14" fill="#0d1e1e" stroke="#00cba9" stroke-width="1.8"/>
+        <!-- tail below-left pointing toward parent -->
+        <polygon points="302,162 290,182 316,168" fill="#0d1e1e" stroke="#00cba9" stroke-width="1.8"/>
+        <text x="409" y="58" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#d0e8e4">Try LearnMate.</text>
+        <text x="409" y="80" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#d0e8e4">Tell it when your exam is</text>
+        <text x="409" y="100" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#d0e8e4">and what&#8217;s covered.</text>
+        <text x="409" y="130" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="15.5" fill="#00cba9" font-weight="700">It builds your plan.</text>
+      </svg>
+      <div class="po">
+        <span class="ptag">The Panicker</span>
+        <div class="ph">"Exam in 9 hours. Haven&#8217;t started."</div>
+        <div class="ps">Tell LearnMate when your exam is and what&#8217;s covered. It tells you exactly what to study and in what order.</div>
+      </div>
+    </div>
+
+        <!-- P4: THE BREAKTHROUGH — split screen, same student, before vs after -->
+    <div class="panel p4 rev">
+      <svg viewBox="0 0 560 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="p4left" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#080810"/>
+            <stop offset="100%" stop-color="#0a0914"/>
+          </linearGradient>
+          <linearGradient id="p4right" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#07100e"/>
+            <stop offset="100%" stop-color="#060e0c"/>
+          </linearGradient>
+          <radialGradient id="p4glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(0,203,169,0.18)"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </radialGradient>
+        </defs>
+
+        <!-- LEFT HALF background — dull, cold -->
+        <rect x="0" y="0" width="272" height="400" fill="url(#p4left)"/>
+        <!-- RIGHT HALF background — warm, glowing -->
+        <rect x="288" y="0" width="272" height="400" fill="url(#p4right)"/>
+        <!-- right half glow -->
+        <ellipse cx="424" cy="200" rx="200" ry="180" fill="url(#p4glow)"/>
+
+        <!-- CENTRE DIVIDER — thin line with label -->
+        <rect x="271" y="0" width="18" height="400" fill="#05060e"/>
+        <line x1="280" y1="0" x2="280" y2="400" stroke="#1a1a2e" stroke-width="1.5"/>
+        <!-- centre label pill -->
+        <rect x="248" y="178" width="64" height="44" rx="12" fill="#0c0c1e" stroke="#2a2a48" stroke-width="1.2"/>
+        <text x="280" y="197" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="9" fill="#4a4a6a" font-weight="700">SAME</text>
+        <text x="280" y="210" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="9" fill="#4a4a6a" font-weight="700">TOPIC</text>
+        <text x="280" y="215" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" fill="#2e2e4a">&#8595;</text>
+
+        <!-- ══ LEFT SIDE — BEFORE — defeated, too many tabs ══ -->
+
+        <!-- desk left -->
+        <rect x="18" y="308" width="236" height="12" rx="4" fill="#111028"/>
+        <rect x="26" y="319" width="9" height="60" rx="3" fill="#0d0b1e"/>
+        <rect x="236" y="319" width="9" height="60" rx="3" fill="#0d0b1e"/>
+
+        <!-- laptop on desk — left side, showing many browser tabs (overwhelmed) -->
+        <rect x="52" y="254" width="152" height="56" rx="6" fill="#0c0e1e" stroke="#1a1c38" stroke-width="1.5"/>
+        <!-- laptop screen -->
+        <rect x="57" y="258" width="142" height="46" rx="4" fill="#090b18"/>
+        <!-- browser tab bar — 7 tabs crammed in -->
+        <rect x="59" y="260" width="138" height="9" rx="2" fill="#0f1124"/>
+        <!-- individual tabs — cramped -->
+        <rect x="60" y="261" width="16" height="7" rx="1" fill="#1a1c38"/>
+        <rect x="78" y="261" width="16" height="7" rx="1" fill="#1a1c38"/>
+        <rect x="96" y="261" width="16" height="7" rx="1" fill="#1a1c38"/>
+        <rect x="114" y="261" width="16" height="7" rx="1" fill="#1a1c38"/>
+        <rect x="132" y="261" width="16" height="7" rx="1" fill="#1a1c38"/>
+        <rect x="150" y="261" width="16" height="7" rx="1" fill="#1a1c38"/>
+        <rect x="168" y="261" width="16" height="7" rx="1" fill="#1a1c38"/>
+        <!-- small x icons on tabs -->
+        <text x="73" y="267" font-size="4" fill="#3a3a5a">&#215;</text>
+        <text x="91" y="267" font-size="4" fill="#3a3a5a">&#215;</text>
+        <text x="109" y="267" font-size="4" fill="#3a3a5a">&#215;</text>
+        <text x="127" y="267" font-size="4" fill="#3a3a5a">&#215;</text>
+        <text x="145" y="267" font-size="4" fill="#3a3a5a">&#215;</text>
+        <text x="163" y="267" font-size="4" fill="#3a3a5a">&#215;</text>
+        <!-- screen content — another YouTube video, same explanation -->
+        <rect x="59" y="271" width="138" height="32" rx="2" fill="#0d0f20"/>
+        <rect x="62" y="274" width="52" height="26" rx="2" fill="#161830"/>
+        <!-- video thumbnail box -->
+        <circle cx="88" cy="287" r="8" fill="#1e2040" stroke="#2a2c52" stroke-width="1"/>
+        <!-- play button -->
+        <polygon points="85,283 85,291 93,287" fill="#3a3c62"/>
+        <!-- video title text -->
+        <rect x="117" y="276" width="72" height="3" rx="1" fill="#2a2c4a"/>
+        <rect x="117" y="281" width="58" height="3" rx="1" fill="#1e2038"/>
+        <rect x="117" y="286" width="64" height="3" rx="1" fill="#1e2038"/>
+        <!-- "explanation #7" label bottom-right of screen -->
+        <text x="192" y="299" text-anchor="end" font-family="DM Sans,sans-serif" font-size="6" fill="#3a3c5a">explanation #7...</text>
+        <!-- laptop hinge / base -->
+        <rect x="48" y="308" width="160" height="5" rx="2" fill="#0a0c1a"/>
+
+        <!-- LEFT STUDENT — slumped, head resting on hand, blank stare -->
+        <!-- body -->
+        <rect x="96" y="216" width="28" height="42" rx="7" fill="#1e1848"/>
+        <!-- upper arm down -->
+        <rect x="88" y="232" width="9" height="30" rx="4" fill="#1a1440"/>
+        <!-- forearm on desk -->
+        <rect x="74" y="256" width="30" height="8" rx="4" fill="#c9956b"/>
+        <!-- head — resting on hand, tilted, blank expression -->
+        <circle cx="116" cy="202" r="22" fill="#c9956b"/>
+        <!-- hair -->
+        <path d="M94 195 Q96 179 116 181 Q136 179 138 195" fill="#1a0a00"/>
+        <ellipse cx="116" cy="183" rx="23" ry="9" fill="#1a0a00"/>
+        <!-- heavy lidded eyes — blank, tired, not taking it in -->
+        <ellipse cx="109" cy="203" rx="4" ry="2.8" fill="#fff" opacity=".75"/>
+        <circle cx="109" cy="204" r="1.8" fill="#2a1500"/>
+        <ellipse cx="121" cy="203" rx="4" ry="2.8" fill="#fff" opacity=".75"/>
+        <circle cx="121" cy="204" r="1.8" fill="#2a1500"/>
+        <!-- heavy lids drawn down — glazed look -->
+        <path d="M105 202 Q109 200.5 113 202" stroke="#1a0a00" stroke-width="1.8" fill="rgba(26,10,0,.5)"/>
+        <path d="M117 202 Q121 200.5 125 202" stroke="#1a0a00" stroke-width="1.8" fill="rgba(26,10,0,.5)"/>
+        <!-- flat mouth — not sad, just... nothing -->
+        <line x1="108" y1="213" x2="122" y2="213" stroke="#a07050" stroke-width="1.4" stroke-linecap="round"/>
+
+        <!-- thought bubble left — quiet despair -->
+        <circle cx="134" cy="190" r="3" fill="#12102a" stroke="#52556e" stroke-width="1" opacity=".8"/>
+        <circle cx="144" cy="180" r="4.5" fill="#12102a" stroke="#52556e" stroke-width="1" opacity=".85"/>
+        <circle cx="156" cy="168" r="6" fill="#12102a" stroke="#52556e" stroke-width="1.2"/>
+        <rect x="38" y="80" width="188" height="78" rx="13" fill="#111028" stroke="#2a2c50" stroke-width="1.4"/>
+        <polygon points="158,158 150,176 170,164" fill="#111028" stroke="#2a2c50" stroke-width="1.4"/>
+        <text x="132" y="108" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#52556e">Watched 7 videos.</text>
+        <text x="132" y="128" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#52556e">Read every page.</text>
+        <text x="132" y="150" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="14" fill="#6a6c8a" font-weight="600">Still doesn&#8217;t click.</text>
+
+        <!-- ══ RIGHT SIDE — AFTER — same student, different energy ══ -->
+
+        <!-- desk right — same height -->
+        <rect x="306" y="308" width="236" height="12" rx="4" fill="#0e1e1a"/>
+        <rect x="314" y="319" width="9" height="60" rx="3" fill="#0a1814"/>
+        <rect x="524" y="319" width="9" height="60" rx="3" fill="#0a1814"/>
+
+        <!-- laptop right — now showing LearnMate, one clean chat -->
+        <rect x="340" y="254" width="152" height="56" rx="6" fill="#0c1a14" stroke="#1a3028" stroke-width="1.5"/>
+        <rect x="345" y="258" width="142" height="46" rx="4" fill="#090f0c"/>
+        <!-- LearnMate header bar -->
+        <rect x="345" y="258" width="142" height="11" rx="2" fill="rgba(0,203,169,0.12)"/>
+        <circle cx="351" cy="263" r="3" fill="#00cba9" opacity=".8"/>
+        <text x="357" y="266" font-family="DM Sans,sans-serif" font-size="6" fill="#00cba9" font-weight="600">LearnMate</text>
+        <!-- clean chat — ONE different explanation -->
+        <rect x="347" y="272" width="96" height="9" rx="4" fill="#6c5ce7" opacity=".78"/>
+        <text x="395" y="279.5" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="#fff">Think of it like a skateboard ramp.</text>
+        <rect x="359" y="284" width="120" height="9" rx="4" fill="#0e1e1c" stroke="#1a3028" stroke-width=".5"/>
+        <text x="419" y="291" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="#7ab0a0">Steeper ramp = bigger slope. See it?</text>
+        <!-- screen glow — warm teal -->
+        <ellipse cx="416" cy="256" rx="80" ry="14" fill="rgba(0,203,169,0.12)"/>
+        <!-- laptop base -->
+        <rect x="336" y="308" width="160" height="5" rx="2" fill="#0a1812"/>
+
+        <!-- RIGHT STUDENT — same person, transformed — leaning forward, lit up -->
+        <!-- body leaning in -->
+        <rect x="382" y="212" width="28" height="44" rx="7" fill="#1e3848" transform="rotate(-6,396,234)"/>
+        <!-- both arms reaching toward laptop -->
+        <path d="M382 228 Q362 252 350 268" stroke="#c9956b" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <path d="M410 226 Q428 250 440 264" stroke="#c9956b" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <!-- head — same person, now wide awake, leaning forward -->
+        <circle cx="396" cy="198" r="24" fill="#c9956b"/>
+        <!-- same hair -->
+        <path d="M372 190 Q374 172 396 174 Q418 172 420 190" fill="#1a0a00"/>
+        <ellipse cx="396" cy="178" rx="25" ry="10" fill="#1a0a00"/>
+        <!-- WIDE OPEN eyes — total contrast to left side -->
+        <ellipse cx="387" cy="199" rx="5.5" ry="5" fill="#fff"/>
+        <circle cx="388.5" cy="199" r="3" fill="#2a1500"/>
+        <circle cx="389.5" cy="197.8" r=".9" fill="#fff"/>
+        <ellipse cx="405" cy="199" rx="5.5" ry="5" fill="#fff"/>
+        <circle cx="406.5" cy="199" r="3" fill="#2a1500"/>
+        <circle cx="407.5" cy="197.8" r=".9" fill="#fff"/>
+        <!-- raised brows — surprise, recognition -->
+        <path d="M382 191 Q387 188 392 191" stroke="#1a0a00" stroke-width="2" fill="none"/>
+        <path d="M400 191 Q405 188 410 191" stroke="#1a0a00" stroke-width="2" fill="none"/>
+        <!-- big open smile — pure joy -->
+        <path d="M383 212 Q396 223 409 212" stroke="#c07850" stroke-width="2.5" fill="rgba(200,120,80,0.18)" stroke-linecap="round"/>
+
+        <!-- thought bubble right — the click moment -->
+        <circle cx="416" cy="185" r="3.5" fill="#0c1e18" stroke="#00cba9" stroke-width="1.1" opacity=".85"/>
+        <circle cx="428" cy="173" r="5" fill="#0c1e18" stroke="#00cba9" stroke-width="1.2" opacity=".9"/>
+        <circle cx="443" cy="159" r="7" fill="#0c1e18" stroke="#00cba9" stroke-width="1.3"/>
+        <rect x="334" y="56" width="204" height="94" rx="14" fill="#0a1e16" stroke="#00cba9" stroke-width="1.8"/>
+        <polygon points="445,150 438,170 458,158" fill="#0a1e16" stroke="#00cba9" stroke-width="1.8"/>
+        <text x="436" y="82" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="22" fill="#fff" font-weight="800">WAIT.</text>
+        <text x="436" y="104" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#00cba9">A skateboard ramp?</text>
+        <text x="436" y="122" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#00cba9">That&#8217;s all slope is? &#128293;</text>
+        <text x="436" y="142" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#6a9a90">Why didn&#8217;t anyone say it like that.</text>
+      </svg>
+      <div class="po">
+        <span class="ptag">The Breakthrough</span>
+        <div class="ph">Same topic. Different explanation. Finally.</div>
+        <div class="ps">Every other app gives the same explanation. LearnMate keeps trying different angles until the one that works for <em>you</em> lands.</div>
+      </div>
+    </div>
+
+  </div><!-- end panels -->
+  <div class="car-nav">
+    <button class="c-arr" id="cprev">&#8592;</button>
+    <div class="c-dots">
+      <div class="c-dot on" data-i="0"></div>
+      <div class="c-dot" data-i="1"></div>
+      <div class="c-dot" data-i="2"></div>
+      <div class="c-dot" data-i="3"></div>
+    </div>
+    <button class="c-arr" id="cnext">&#8594;</button>
+  </div>
+  </div><!-- end car-outer -->
+</section>
+
+<!-- WHY -->
+<section class="sec2">
+  <div class="wtag rev">Why it works</div>
+  <h2 class="wtitle rev">Not a search engine.<br/><span style="color:var(--a)">A companion that adapts to you.</span></h2>
+  <div class="wgrid rev">
+    <div class="wcard"><span class="wi">&#129504;</span><div class="wh">Knows your history</div><div class="wd">Tracks every topic, every score, every gap. Every response is built around you &#8212; not a generic student.</div></div>
+    <div class="wcard"><span class="wi">&#127919;</span><div class="wh">Ties learning to your life</div><div class="wd">Tell LearnMate where you want to go. It makes every concept feel like something worth knowing.</div></div>
+    <div class="wcard"><span class="wi">&#128260;</span><div class="wh">Built so things stick</div><div class="wd">Brings back what you&#8217;re forgetting at exactly the right moment. Your weakest spots get the most attention.</div></div>
+    <div class="wcard"><span class="wi">&#9889;</span><div class="wh">Free &#8212; always</div><div class="wd">No subscription. No paywall. No credit card. Everyone deserves a great study companion.</div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="feats">
+  <div class="wtag rev">What&#8217;s inside</div>
+  <h2 class="wtitle rev" style="margin-bottom:36px;">Two things that change<br/><span style="color:var(--b)">how you study.</span></h2>
+  <div class="glabel rev">Learn with your AI companion</div>
+  <div class="frow rev">
+    <div class="fc"><div class="fcg" style="background:rgba(108,92,231,.22)"></div><span class="fci">&#128172;</span><div class="fct">Ask anything</div><div class="fcd">No judgement. No waiting. A clear explanation built for the way you think.</div></div>
+    <div class="fc"><div class="fcg" style="background:rgba(232,67,147,.22)"></div><span class="fci">&#128680;</span><div class="fct">Exam rescue mode</div><div class="fcd">Running out of time? Get a plan for exactly what moves the needle right now.</div></div>
+    <div class="fc"><div class="fcg" style="background:rgba(0,203,169,.22)"></div><span class="fci">&#127919;</span><div class="fct">Connected to your goals</div><div class="fcd">Tell LearnMate your dream. Every explanation connects back to where you&#8217;re going.</div></div>
+  </div>
+  <div class="glabel rev" style="margin-top:28px;">Challenge yourself</div>
+  <div class="frow rev">
+    <div class="fc"><div class="fcg" style="background:rgba(245,166,35,.22)"></div><span class="fci">&#129354;</span><div class="fct">Brain Duel</div><div class="fcd">Quiz yourself. Scores tracked. Weak spots flagged. Fun enough you&#8217;ll go again.</div></div>
+    <div class="fc"><div class="fcg" style="background:rgba(108,92,231,.22)"></div><span class="fci">&#128269;</span><div class="fct">Real world challenges</div><div class="fcd">Daily puzzles showing where concepts live &#8212; architecture, sport, nature, tech.</div></div>
+    <div class="fc"><div class="fcg" style="background:rgba(232,67,147,.22)"></div><span class="fci">&#128293;</span><div class="fct">Streaks &amp; XP</div><div class="fcd">Show up every day. See yourself improve. Small wins build into something real.</div></div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="qsec">
+  <div class="qbg"></div>
+  <div class="qrings"><div class="qr qr1"></div><div class="qr qr2"></div><div class="qr qr3"></div></div>
+  <span class="qmark rev">&#8220;</span>
+  <p class="qtxt rev">You don&#8217;t have to<br/>figure it out alone.</p>
+  <p class="qattr rev">&#8212; what LearnMate is here for</p>
+</section>
+
+<!-- CTA -->
+<section class="ctasec">
+  <div class="ctabg"></div>
+  <h2 class="ctah rev">Still stuck?<br/><span style="background:linear-gradient(135deg,var(--a),var(--b),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Just ask.</span></h2>
+  <p class="ctasub rev">No sign-up. No cost. Works in 10 seconds.</p>
+  <div class="rev"><a href="https://learnwithme-eight.vercel.app" class="bcta">Ask something right now &#8599;</a></div>
+</section>
+
+<footer>
+  <div class="logo">LearnMate</div>
+  <div>Built for every curious mind. Free, forever.</div>
+  <div>&#169; 2026 LearnMate</div>
+</footer>
+</div>
+
+<script>
+  /* Cursor */
+  const cur=document.getElementById("cur"),ring=document.getElementById("cur-r");
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+"px";cur.style.top=my+"px";});
+  (function a(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+"px";ring.style.top=ry+"px";requestAnimationFrame(a);})();
+  document.querySelectorAll("a,button").forEach(el=>{
+    el.addEventListener("mouseenter",()=>{cur.style.width="16px";cur.style.height="16px";cur.style.background="var(--b)";ring.style.width="44px";ring.style.height="44px";});
+    el.addEventListener("mouseleave",()=>{cur.style.width="9px";cur.style.height="9px";cur.style.background="var(--a)";ring.style.width="30px";ring.style.height="30px";});
+  });
+
+  /* Scroll reveal */
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add("in"),i*80);obs.unobserve(e.target);}});
+  },{threshold:.06});
+  document.querySelectorAll(".rev").forEach(el=>obs.observe(el));
+
+  /* Carousel */
+  const track=document.getElementById("ctrack");
+  const dots=document.querySelectorAll(".c-dot");
+  const panels=document.querySelectorAll(".panel");
+  let cur2=0, total=panels.length, autoT;
+
+  function goTo(i){
+    cur2=((i%total)+total)%total;
+    track.scrollTo({left:cur2*track.offsetWidth,behavior:"smooth"});
+    dots.forEach((d,j)=>d.classList.toggle("on",j===cur2));
+    panels.forEach((p,j)=>p.classList.toggle("active",j===cur2));
+  }
+
+  // Init first panel active
+  panels[0].classList.add("active");
+
+  document.getElementById("cprev").addEventListener("click",()=>goTo(cur2-1));
+  document.getElementById("cnext").addEventListener("click",()=>goTo(cur2+1));
+  dots.forEach(d=>d.addEventListener("click",()=>goTo(+d.dataset.i)));
+
+  // Sync dots on manual scroll
+  let scrollT;
+  track.addEventListener("scroll",()=>{
+    clearTimeout(scrollT);
+    scrollT=setTimeout(()=>{
+      const i=Math.round(track.scrollLeft/track.offsetWidth);
+      if(i!==cur2){cur2=i;dots.forEach((d,j)=>d.classList.toggle("on",j===cur2));panels.forEach((p,j)=>p.classList.toggle("active",j===cur2));}
+    },80);
+  });
+
+  // Auto-advance every 5s
+  function startAuto(){autoT=setInterval(()=>goTo(cur2+1),5000);}
+  function stopAuto(){clearInterval(autoT);}
+  startAuto();
+  track.addEventListener("mouseenter",stopAuto);
+  track.addEventListener("mouseleave",startAuto);
+</script>
+</body>
+</html>
